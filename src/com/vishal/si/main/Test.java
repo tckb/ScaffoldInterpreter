@@ -4,10 +4,10 @@
  */
 package com.vishal.si.main;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.openscience.cdk.exception.CDKException;
-import org.openscience.cdk.exception.InvalidSmilesException;
 
 /**
  *
@@ -40,6 +40,11 @@ public class Test extends javax.swing.JFrame {
         structure.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
 
         input.setText("jTextField1");
+        input.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                inputActionPerformed(evt);
+            }
+        });
 
         jButton1.setText("jButton1");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
@@ -78,17 +83,19 @@ public class Test extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+       String smile = null;
         try {
-            ImageRenderer renderer = new ImageRenderer();
-            renderer.setHeight(structure.getHeight());
-            renderer.setWidth(structure.getWidth());
-            structure.setIcon(renderer.getIconFromSmiles(input.getText()));
-        } catch (InvalidSmilesException ex) {
-            Logger.getLogger(Test.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (CDKException ex) {
+            smile = ReadSDF.getSmilesFromFile(new File(input.getText()));
+        } catch (FileNotFoundException ex) {
             Logger.getLogger(Test.class.getName()).log(Level.SEVERE, null, ex);
         }
+             
+       System.out.println(smile);
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void inputActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_inputActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_inputActionPerformed
 
     /**
      * @param args the command line arguments

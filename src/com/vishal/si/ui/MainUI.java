@@ -5,12 +5,14 @@
 package com.vishal.si.ui;
 
 import com.vishal.si.main.ImageRenderer;
+import com.vishal.si.main.ReadSDF;
 import com.vishal.si.main.Utility;
 import com.vishal.si.struct.Drug;
 import com.vishal.si.struct.Scaffold;
 import java.awt.Color;
 import java.awt.Component;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.TreeMap;
 import java.util.logging.Level;
@@ -401,9 +403,19 @@ public class MainUI extends javax.swing.JFrame {
     }//GEN-LAST:event_queryBoxActionPerformed
 
     private void sdFileChooserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sdFileChooserActionPerformed
-        String sdFile = Utility.UI.getFile(queryBox, new FileNameExtensionFilter(" SD File (*.sdf) ", "sdf")).getAbsolutePath();
+        File sdFile = Utility.UI.getFile(queryBox, new FileNameExtensionFilter(" SD File (*.sdf) ", "sdf"));
         if (sdFile != null) {
-            queryBox.setText(sdFile);
+            String smile;
+            try {
+                smile = ReadSDF.getSmilesFromFile(sdFile);
+                smile = ReadSDF.getCanonicalSmiles(smile);
+                queryBox.setText(smile);
+
+            } catch (Exception ex) {
+                Utility.UI.showInfoMessage(getRootPane(), "Error reading SDF File please check");
+            }
+
+
         }
     }//GEN-LAST:event_sdFileChooserActionPerformed
 
@@ -460,7 +472,7 @@ public class MainUI extends javax.swing.JFrame {
 
 
             // Utility.UI.showInfoMessage(getRootPane(), res.toString());        
-        }else{
+        } else {
             Utility.UI.showInfoMessage(getRootPane(), "HMaps not loaded!");
         }
 
@@ -558,6 +570,7 @@ public class MainUI extends javax.swing.JFrame {
          * Create and display the form
          */
         java.awt.EventQueue.invokeLater(new Runnable() {
+
             public void run() {
                 new MainUI().setVisible(true);
             }
