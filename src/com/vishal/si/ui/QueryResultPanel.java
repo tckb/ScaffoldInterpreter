@@ -95,13 +95,13 @@ public class QueryResultPanel extends javax.swing.JPanel {
         dName = new javax.swing.JLabel();
         dSMILE = new javax.swing.JLabel();
         dStat = new javax.swing.JLabel();
-        dRef = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        dInd = new javax.swing.JTextArea();
+        dRef = new javax.swing.JTextArea();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
-        jLabel5 = new javax.swing.JLabel();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        dInd = new javax.swing.JTextArea();
 
         resultPanel.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
@@ -114,19 +114,16 @@ public class QueryResultPanel extends javax.swing.JPanel {
 
         dStat.setText("Status");
 
-        dRef.setText("Externref");
-
-        dInd.setBackground(new java.awt.Color(240, 240, 240));
-        dInd.setColumns(500);
-        dInd.setEditable(false);
-        dInd.setLineWrap(true);
-        dInd.setRows(5);
-        dInd.setWrapStyleWord(true);
-        dInd.setAutoscrolls(false);
-        dInd.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Indication:", javax.swing.border.TitledBorder.LEFT, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 1, 11))); // NOI18N
-        dInd.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
-        dInd.setDragEnabled(true);
-        jScrollPane1.setViewportView(dInd);
+        dRef.setEditable(false);
+        dRef.setBackground(new java.awt.Color(240, 240, 240));
+        dRef.setColumns(500);
+        dRef.setLineWrap(true);
+        dRef.setRows(3);
+        dRef.setWrapStyleWord(true);
+        dRef.setAutoscrolls(false);
+        dRef.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "External Refs:", javax.swing.border.TitledBorder.LEFT, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 1, 11))); // NOI18N
+        dRef.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        jScrollPane1.setViewportView(dRef);
 
         jLabel2.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         jLabel2.setText("Drug Name:");
@@ -137,8 +134,16 @@ public class QueryResultPanel extends javax.swing.JPanel {
         jLabel4.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         jLabel4.setText("Status:");
 
-        jLabel5.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
-        jLabel5.setText("Reference IDs:  ");
+        dInd.setEditable(false);
+        dInd.setBackground(new java.awt.Color(240, 240, 240));
+        dInd.setColumns(500);
+        dInd.setLineWrap(true);
+        dInd.setRows(5);
+        dInd.setWrapStyleWord(true);
+        dInd.setAutoscrolls(false);
+        dInd.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Indication:", javax.swing.border.TitledBorder.LEFT, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 1, 11))); // NOI18N
+        dInd.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        jScrollPane2.setViewportView(dInd);
 
         javax.swing.GroupLayout resultPanelLayout = new javax.swing.GroupLayout(resultPanel);
         resultPanel.setLayout(resultPanelLayout);
@@ -149,20 +154,22 @@ public class QueryResultPanel extends javax.swing.JPanel {
                 .addComponent(dStruct, javax.swing.GroupLayout.PREFERRED_SIZE, 234, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(resultPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                     .addGroup(resultPanelLayout.createSequentialGroup()
                         .addGroup(resultPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel5)
                             .addComponent(jLabel4)
                             .addComponent(jLabel3)
                             .addComponent(jLabel2))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGap(30, 30, 30)
                         .addGroup(resultPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(dName, javax.swing.GroupLayout.DEFAULT_SIZE, 236, Short.MAX_VALUE)
+                            .addComponent(dName, javax.swing.GroupLayout.DEFAULT_SIZE, 239, Short.MAX_VALUE)
                             .addComponent(dSMILE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(dRef, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(dStat, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
-                .addGap(21, 21, 21))
+                            .addComponent(dStat, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(21, 21, 21))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, resultPanelLayout.createSequentialGroup()
+                        .addGroup(resultPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+                        .addContainerGap())))
         );
         resultPanelLayout.setVerticalGroup(
             resultPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -182,11 +189,9 @@ public class QueryResultPanel extends javax.swing.JPanel {
                             .addComponent(jLabel4)
                             .addComponent(dStat, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addGap(18, 18, 18)
-                        .addGroup(resultPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel5)
-                            .addComponent(dRef, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addGap(18, 18, 18)
-                        .addComponent(jScrollPane1))
+                        .addComponent(jScrollPane1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(dStruct, javax.swing.GroupLayout.DEFAULT_SIZE, 0, Short.MAX_VALUE))
                 .addContainerGap())
         );
@@ -201,7 +206,7 @@ public class QueryResultPanel extends javax.swing.JPanel {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 272, Short.MAX_VALUE)
+            .addGap(0, 313, Short.MAX_VALUE)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(layout.createSequentialGroup()
                     .addComponent(resultPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -211,15 +216,15 @@ public class QueryResultPanel extends javax.swing.JPanel {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextArea dInd;
     private javax.swing.JLabel dName;
-    private javax.swing.JLabel dRef;
+    private javax.swing.JTextArea dRef;
     private javax.swing.JLabel dSMILE;
     private javax.swing.JLabel dStat;
     private javax.swing.JLabel dStruct;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JPanel resultPanel;
     // End of variables declaration//GEN-END:variables
 }
