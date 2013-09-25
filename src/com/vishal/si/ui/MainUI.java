@@ -12,15 +12,20 @@ import com.vishal.si.struct.Scaffold;
 import java.awt.Color;
 import java.awt.Component;
 import java.io.File;
-import java.io.FileNotFoundException;
+import java.lang.reflect.Type;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import org.openscience.cdk.DefaultChemObjectBuilder;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.exception.InvalidSmilesException;
+import org.openscience.cdk.smiles.SmilesParser;
+import org.openscience.cdk.smiles.smarts.SMARTSQueryTool;
 
 /**
  *
@@ -31,8 +36,9 @@ public class MainUI extends javax.swing.JFrame {
     TreeMap<String, List<String>> invertedIndexMap;
     TreeMap<String, Drug> drugList;
     DefaultListModel queryResultData = new DefaultListModel();
-    private TreeMap<String, Scaffold> scaffoldList;
+    TreeMap<String, Scaffold> scaffoldList;
     ImageRenderer renderer = new ImageRenderer();
+    SmilesParser sParser = new SmilesParser(DefaultChemObjectBuilder.getInstance());
 
     /**
      * Creates new form MainUI
@@ -63,6 +69,8 @@ public class MainUI extends javax.swing.JFrame {
         jButton3 = new javax.swing.JButton();
         jSplitPane1 = new javax.swing.JSplitPane();
         jPanel5 = new javax.swing.JPanel();
+        jPopupMenu1 = new javax.swing.JPopupMenu();
+        jMenuItem2 = new javax.swing.JMenuItem();
         jSplitPane2 = new javax.swing.JSplitPane();
         jPanel1 = new javax.swing.JPanel();
         jPanel3 = new javax.swing.JPanel();
@@ -71,6 +79,7 @@ public class MainUI extends javax.swing.JFrame {
         sdFileChooser = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
         jButton1 = new javax.swing.JButton();
+        uniqueSMILE = new javax.swing.JCheckBox();
         jPanel4 = new javax.swing.JPanel();
         scfStruct = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
@@ -83,6 +92,7 @@ public class MainUI extends javax.swing.JFrame {
         jPanel2 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         queryResultList = new javax.swing.JList();
+        status = new javax.swing.JLabel();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
@@ -167,9 +177,9 @@ public class MainUI extends javax.swing.JFrame {
                 .addGroup(hMapLoaderFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel7)
                     .addComponent(scfHMapLoc, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jButton3)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(18, Short.MAX_VALUE))
         );
 
         hMapLoaderFrame.getAccessibleContext().setAccessibleParent(getRootPane());
@@ -186,6 +196,14 @@ public class MainUI extends javax.swing.JFrame {
         );
 
         jSplitPane1.setLeftComponent(jPanel5);
+
+        jMenuItem2.setText("Cannonical smile");
+        jMenuItem2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem2ActionPerformed(evt);
+            }
+        });
+        jPopupMenu1.add(jMenuItem2);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Scaffold Interpreter");
@@ -225,20 +243,25 @@ public class MainUI extends javax.swing.JFrame {
             }
         });
 
+        uniqueSMILE.setText("Canonical SMILE");
+
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(jButton1))
                     .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 402, Short.MAX_VALUE)
                     .addComponent(queryBox, javax.swing.GroupLayout.Alignment.LEADING))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(sdFileChooser))
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(uniqueSMILE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jButton1)
+                .addContainerGap())
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -252,7 +275,9 @@ public class MainUI extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton1)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButton1)
+                    .addComponent(uniqueSMILE))
                 .addContainerGap(18, Short.MAX_VALUE))
         );
 
@@ -304,7 +329,7 @@ public class MainUI extends javax.swing.JFrame {
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel4Layout.createSequentialGroup()
-                .addComponent(scfStruct, javax.swing.GroupLayout.DEFAULT_SIZE, 223, Short.MAX_VALUE)
+                .addComponent(scfStruct, javax.swing.GroupLayout.DEFAULT_SIZE, 220, Short.MAX_VALUE)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel4Layout.createSequentialGroup()
                         .addGap(18, 18, 18)
@@ -360,10 +385,13 @@ public class MainUI extends javax.swing.JFrame {
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 545, Short.MAX_VALUE)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 542, Short.MAX_VALUE)
         );
 
         jSplitPane2.setRightComponent(jPanel2);
+
+        status.setForeground(new java.awt.Color(102, 102, 102));
+        status.setText("Type in to search ");
 
         jMenu1.setText("HMaps");
 
@@ -383,16 +411,21 @@ public class MainUI extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+            .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jSplitPane2))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jSplitPane2)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(status, javax.swing.GroupLayout.PREFERRED_SIZE, 939, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap())))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jSplitPane2)
-                .addContainerGap())
+                .addComponent(jSplitPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 550, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(status, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         pack();
@@ -420,61 +453,82 @@ public class MainUI extends javax.swing.JFrame {
     }//GEN-LAST:event_sdFileChooserActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        if (HMapsLoaded()) {
+        status.setText("Searching... please wait.");
 
-            String query = queryBox.getText().trim();
-            Scaffold scf = scaffoldList.get(query);
-            if (scf != null) {
-                try {
-                    scfName.setText(scf.getIUPACname());
-                    scfLogP.setText(String.valueOf(scf.getLogP()));
-                    scfBMFrame.setText(scf.getBMframework());
+        queryResultData.clear();
+        scfLogP.setText("Not found");
+        scfBMFrame.setText("Not found");
+        scfName.setText("Not found");
+        scfStruct.setIcon(null);
+        new Thread() {
+            @Override
+            public void run() {
+                if (HMapsLoaded()) {
+
+                    String query = queryBox.getText().trim();
+
                     renderer.setHeight(scfStruct.getHeight());
                     renderer.setWidth(scfStruct.getWidth());
-                    scfStruct.setIcon(renderer.getIconFromSmiles(query));
-                } catch (InvalidSmilesException ex) {
-                    Logger.getLogger(MainUI.class.getName()).log(Level.SEVERE, null, ex);
-                } catch (CDKException ex) {
-                    Logger.getLogger(MainUI.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-
-            List<String> resList = invertedIndexMap.get(query);
-            if (resList != null) {
-                queryResultData.clear();
-
-                for (String res : resList) {
                     try {
-                        QueryResultPanel qResultPanel = new QueryResultPanel();
-                        Drug resD = drugList.get(res.toLowerCase());
-                        qResultPanel.setdName(resD.getName());
-                        qResultPanel.setdSMILE(resD.getUniqueSMILE());
-                        qResultPanel.setdInd(resD.getIndication());
-                        qResultPanel.setdRef(resD.getDrugbankID());
-                        renderer.setHeight(qResultPanel.getdStructDimension().height);
-                        renderer.setWidth(qResultPanel.getdStructDimension().width);
-                        qResultPanel.setdStruct(renderer.getIconFromSmiles(resD.getUniqueSMILE()));
-
-
-
-
-
-                        queryResultData.addElement(qResultPanel);
-                    } catch (InvalidSmilesException ex) {
-                        Logger.getLogger(MainUI.class.getName()).log(Level.SEVERE, null, ex);
-                    } catch (CDKException ex) {
-                        Logger.getLogger(MainUI.class.getName()).log(Level.SEVERE, null, ex);
+                        scfStruct.setIcon(renderer.getIconFromSmiles(query));
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
                     }
+
+
+
+
+                    Scaffold scf = (Scaffold) getQueryIndexFromMap(scaffoldList, query);
+                    if (scf != null) {
+                        scfName.setText(scf.getIUPACname());
+                        scfLogP.setText(String.valueOf(scf.getLogP()));
+                        scfBMFrame.setText(scf.getBMframework());
+                    } else {
+                        status.setText("Scaffold not found in the database!");
+                    }
+
+                    List<String> resList = (List<String>) getQueryIndexFromMap(invertedIndexMap, query);
+                    if (resList != null) {
+//               
+                        status.setText(resList.size() + " results found in the database.");
+                        for (String res : resList) {
+                            try {
+                                QueryResultPanel qResultPanel = new QueryResultPanel();
+                                Drug resD = drugList.get(res.toLowerCase());
+                                qResultPanel.setdName(resD.getName());
+                                qResultPanel.setdSMILE(resD.getUniqueSMILE());
+                                qResultPanel.setdInd(resD.getIndication());
+                                qResultPanel.setdRef(resD.getDrugbankID());
+                                renderer.setHeight(qResultPanel.getdStructDimension().height);
+                                renderer.setWidth(qResultPanel.getdStructDimension().width);
+                                qResultPanel.setdStruct(renderer.getIconFromSmiles(resD.getUniqueSMILE()));
+
+
+
+
+
+                                queryResultData.addElement(qResultPanel);
+//                                queryResultList.repaint();
+
+                            } catch (InvalidSmilesException ex) {
+                                Logger.getLogger(MainUI.class.getName()).log(Level.SEVERE, null, ex);
+                            } catch (CDKException ex) {
+                                Logger.getLogger(MainUI.class.getName()).log(Level.SEVERE, null, ex);
+                            }
+                        }
+                    } else {
+                        Utility.UI.showInfoMessage(getRootPane(), "No drug contains the scaffold provided!");
+                        status.setText("Scaffold not found in the database!");
+                    }
+
+
+                    // Utility.UI.showInfoMessage(getRootPane(), res.toString());        
+                } else {
+                    Utility.UI.showInfoMessage(getRootPane(), "HMaps not loaded!");
                 }
-            } else {
-                Utility.UI.showInfoMessage(getRootPane(), "No drug contains the scaffold provided!");
             }
+        }.start();
 
-
-            // Utility.UI.showInfoMessage(getRootPane(), res.toString());        
-        } else {
-            Utility.UI.showInfoMessage(getRootPane(), "HMaps not loaded!");
-        }
 
     }//GEN-LAST:event_jButton1ActionPerformed
 
@@ -517,11 +571,39 @@ public class MainUI extends javax.swing.JFrame {
         hMapLoaderFrame.setVisible(true);
     }//GEN-LAST:event_jMenuItem1ActionPerformed
 
+    private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jMenuItem2ActionPerformed
+
     private boolean HMapsLoaded() {
         if (invertedIndexMap != null && drugList != null && scaffoldList != null) {
             return true;
         } else {
             return false;
+        }
+    }
+
+    private Object getQueryIndexFromMap(TreeMap map, String query) {
+
+        if (uniqueSMILE.isSelected()) {
+//            System.out.println("map result: "+map.get(query));
+            return map.get(query);
+        } else {
+
+            SMARTSQueryTool querytool;
+            for (Iterator it = map.entrySet().iterator(); it.hasNext();) {
+                Entry e = (Entry) it.next();
+                try {
+                    querytool = new SMARTSQueryTool((String) e.getKey());
+                    boolean result = querytool.matches(sParser.parseSmiles(query));
+                    if (result == true) {
+                        return e.getValue();
+                    }
+                } catch (CDKException ex) {
+                    return null;
+                }
+            }
+            return null;
         }
     }
 
@@ -570,7 +652,7 @@ public class MainUI extends javax.swing.JFrame {
          * Create and display the form
          */
         java.awt.EventQueue.invokeLater(new Runnable() {
-
+            @Override
             public void run() {
                 new MainUI().setVisible(true);
             }
@@ -592,11 +674,13 @@ public class MainUI extends javax.swing.JFrame {
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
+    private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
+    private javax.swing.JPopupMenu jPopupMenu1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JSplitPane jSplitPane1;
@@ -610,6 +694,8 @@ public class MainUI extends javax.swing.JFrame {
     private javax.swing.JLabel scfStruct;
     private javax.swing.JButton sdFileChooser;
     private javax.swing.JTextField ssHMapLoc;
+    private javax.swing.JLabel status;
+    private javax.swing.JCheckBox uniqueSMILE;
     // End of variables declaration//GEN-END:variables
 
     private void loadHMaps() {
@@ -617,7 +703,7 @@ public class MainUI extends javax.swing.JFrame {
             invertedIndexMap = (TreeMap<String, List<String>>) Utility.getObjectFromFile(new File(ssHMapLoc.getText()))[0];
             drugList = (TreeMap<String, Drug>) Utility.getObjectFromFile(new File(dHMapLoc.getText()))[0];
             scaffoldList = (TreeMap<String, Scaffold>) Utility.getObjectFromFile(new File(scfHMapLoc.getText()))[0];
-            Utility.UI.showInfoMessage(getRootPane(), "Loading successfully done!");
+            status.setText("Loading successfully done!");
         } catch (Exception e) {
             Utility.UI.showInfoMessage(getRootPane(), "Error loading HMaps please try again!");
         }
