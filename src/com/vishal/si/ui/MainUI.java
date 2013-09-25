@@ -290,6 +290,7 @@ public class MainUI extends javax.swing.JFrame {
         jPanel4.setBorder(javax.swing.BorderFactory.createTitledBorder("About the scaffold"));
 
         scfStruct.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        scfStruct.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
         jLabel5.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         jLabel5.setText("IUPAC Name:");
@@ -469,7 +470,7 @@ public class MainUI extends javax.swing.JFrame {
         new Thread() {
             @Override
             public void run() {
-                if (HMapsLoaded()) {
+                if (isHMapsLoaded()) {
 
                     String query = queryBox.getText().trim();
 
@@ -585,7 +586,7 @@ public class MainUI extends javax.swing.JFrame {
         cacheHMapLoc();
     }//GEN-LAST:event_formWindowClosing
 
-    private boolean HMapsLoaded() {
+    private boolean isHMapsLoaded() {
         if (invertedIndexMap != null && drugList != null && scaffoldList != null) {
             return true;
         } else {

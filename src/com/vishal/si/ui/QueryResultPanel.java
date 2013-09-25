@@ -106,6 +106,7 @@ public class QueryResultPanel extends javax.swing.JPanel {
         resultPanel.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
         dStruct.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        dStruct.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         dStruct.setPreferredSize(new java.awt.Dimension(300, 300));
 
         dName.setText("Here goes name");
@@ -192,7 +193,7 @@ public class QueryResultPanel extends javax.swing.JPanel {
                         .addComponent(jScrollPane1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(dStruct, javax.swing.GroupLayout.DEFAULT_SIZE, 0, Short.MAX_VALUE))
+                    .addComponent(dStruct, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
