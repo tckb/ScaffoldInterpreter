@@ -36,7 +36,7 @@ public class Utility {
     // Public constants
     public final static String WORD_BREAK = " ";
     public final static String LINE_BREAK = System.getProperty("line.separator");
-    public final static String FILE_SEPERATOR = System.getProperty("path.separator");
+    public final static String FILE_SEPERATOR = System.getProperty("file.separator");
     public final static String OS_NAME = System.getProperty("os.name");
     public final static String OS_ARC = System.getProperty("os.arch");
     public final static String J_CLSPTH = System.getProperty("java.class.path");
@@ -420,6 +420,7 @@ public class Utility {
         mylogger.log(Level.INFO, "Saving object{0} to file: {1}", new Object[]{thisObject.hashCode(), thatFile.getAbsolutePath()});
         ObjectOutputStream stream;
         try {
+            thatFile.delete();
             if(thatFile.createNewFile()){
             stream = new ObjectOutputStream(new FileOutputStream(thatFile));
             stream.writeObject(thisObject);

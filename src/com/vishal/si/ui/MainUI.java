@@ -47,6 +47,7 @@ public class MainUI extends javax.swing.JFrame {
         initComponents();
         hMapLoaderFrame.setSize(586, 200);
         queryResultList.setCellRenderer(new PanelRenderer());
+        loadCachedHMapLoc();
 
     }
 
@@ -208,6 +209,11 @@ public class MainUI extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Scaffold Interpreter");
         setLocationByPlatform(true);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                formWindowClosing(evt);
+            }
+        });
 
         jPanel1.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
@@ -294,9 +300,9 @@ public class MainUI extends javax.swing.JFrame {
         jLabel9.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         jLabel9.setText("Log P:");
 
+        scfName.setEditable(false);
         scfName.setBackground(javax.swing.UIManager.getDefaults().getColor("Menu.background"));
         scfName.setColumns(20);
-        scfName.setEditable(false);
         scfName.setLineWrap(true);
         scfName.setRows(2);
         scfName.setWrapStyleWord(true);
@@ -423,7 +429,7 @@ public class MainUI extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jSplitPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 550, Short.MAX_VALUE)
+                .addComponent(jSplitPane2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(status, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
@@ -575,6 +581,10 @@ public class MainUI extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_jMenuItem2ActionPerformed
 
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+        cacheHMapLoc();
+    }//GEN-LAST:event_formWindowClosing
+
     private boolean HMapsLoaded() {
         if (invertedIndexMap != null && drugList != null && scaffoldList != null) {
             return true;
@@ -605,6 +615,25 @@ public class MainUI extends javax.swing.JFrame {
             }
             return null;
         }
+    }
+
+    private void loadCachedHMapLoc() {
+        File cacheFile = new File(Utility.USER_DIR +Utility.FILE_SEPERATOR+ "si.cache");
+        if (cacheFile.exists()) {
+            Object locs[] =  Utility.getObjectFromFile(cacheFile);
+            ssHMapLoc.setText((String)locs[0]);
+            dHMapLoc.setText((String)locs[1]);
+            scfHMapLoc.setText((String)locs[2]);
+
+            loadHMaps();
+
+        }
+
+    }
+
+    private void cacheHMapLoc() {
+        File cacheFile = new File(Utility.USER_DIR +Utility.FILE_SEPERATOR+"si.cache");
+        Utility.saveObjectToFile(cacheFile, ssHMapLoc.getText(), dHMapLoc.getText(), scfHMapLoc.getText());
     }
 
     class PanelRenderer implements ListCellRenderer {
@@ -705,7 +734,7 @@ public class MainUI extends javax.swing.JFrame {
             scaffoldList = (TreeMap<String, Scaffold>) Utility.getObjectFromFile(new File(scfHMapLoc.getText()))[0];
             status.setText("Loading successfully done!");
         } catch (Exception e) {
-            Utility.UI.showInfoMessage(getRootPane(), "Error loading HMaps please try again!");
+            status.setText("Error loading HMaps please check.");
         }
     }
 }
