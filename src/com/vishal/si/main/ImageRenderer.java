@@ -58,7 +58,8 @@ public class ImageRenderer {
         sdg.setMolecule(molecule);
         sdg.generateCoordinates();
         molecule = sdg.getMolecule();
-
+        
+        
         List generators = new ArrayList();
         generators.add(new BasicBondGenerator());
         generators.add(new BasicAtomGenerator());
@@ -71,9 +72,10 @@ public class ImageRenderer {
 
         renderer.setup(molecule, drawArea);
         Rectangle dim = renderer.calculateDiagramBounds(molecule);
-
+        
         RendererModel model = renderer.getRenderer2DModel();
-
+        
+        
         model.setNotification(true);
         model.set(ZoomFactor.class, (double) 0.5* (getArea(width, height)) / (getArea(dim.width, dim.height)));
         Graphics2D g2 = (Graphics2D) image.getGraphics();

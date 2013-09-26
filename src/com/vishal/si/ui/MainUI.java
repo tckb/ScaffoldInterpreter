@@ -39,6 +39,8 @@ public class MainUI extends javax.swing.JFrame {
     TreeMap<String, Scaffold> scaffoldList;
     ImageRenderer renderer = new ImageRenderer();
     SmilesParser sParser = new SmilesParser(DefaultChemObjectBuilder.getInstance());
+    QuerySwingWorker queryResultLoader = new QuerySwingWorker();
+    private boolean initFlag = true;
 
     /**
      * Creates new form MainUI
@@ -460,81 +462,29 @@ public class MainUI extends javax.swing.JFrame {
     }//GEN-LAST:event_sdFileChooserActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        status.setText("Searching... please wait.");
 
-        queryResultData.clear();
-        scfLogP.setText("Not found");
-        scfBMFrame.setText("Not found");
-        scfName.setText("Not found");
-        scfStruct.setIcon(null);
-        new Thread() {
-            @Override
-            public void run() {
-                if (isHMapsLoaded()) {
+        if (queryResultLoader.isDone() || initFlag) {
+            queryResultLoader = new QuerySwingWorker();
 
-                    String query = queryBox.getText().trim();
+            status.setText("Searching... please wait.");
+            queryResultData.clear();
+            scfLogP.setText("Not found");
+            scfBMFrame.setText("Not found");
+            scfName.setText("Not found");
+            scfStruct.setIcon(null);
+            queryResultLoader.execute();
+            initFlag = false;
+        } else {
+            int res = JOptionPane.showConfirmDialog(getRootPane(), "Loading in progress. Cancel loading?", "Progress", JOptionPane.YES_NO_OPTION);
+            if (res == JOptionPane.YES_OPTION) {
+                queryResultLoader.cancel(true);
 
-                    renderer.setHeight(scfStruct.getHeight());
-                    renderer.setWidth(scfStruct.getWidth());
-                    try {
-                        scfStruct.setIcon(renderer.getIconFromSmiles(query));
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                    }
-
-
-
-
-                    Scaffold scf = (Scaffold) getQueryIndexFromMap(scaffoldList, query);
-                    if (scf != null) {
-                        scfName.setText(scf.getIUPACname());
-                        scfLogP.setText(String.valueOf(scf.getLogP()));
-                        scfBMFrame.setText(scf.getBMframework());
-                    } else {
-                        status.setText("Scaffold not found in the database!");
-                    }
-
-                    List<String> resList = (List<String>) getQueryIndexFromMap(invertedIndexMap, query);
-                    if (resList != null) {
-//               
-                        status.setText(resList.size() + " results found in the database.");
-                        for (String res : resList) {
-                            try {
-                                QueryResultPanel qResultPanel = new QueryResultPanel();
-                                Drug resD = drugList.get(res.toLowerCase());
-                                qResultPanel.setdName(resD.getName());
-                                qResultPanel.setdSMILE(resD.getUniqueSMILE());
-                                qResultPanel.setdInd(resD.getIndication());
-                                qResultPanel.setdRef(resD.getDrugbankID());
-                                renderer.setHeight(qResultPanel.getdStructDimension().height);
-                                renderer.setWidth(qResultPanel.getdStructDimension().width);
-                                qResultPanel.setdStruct(renderer.getIconFromSmiles(resD.getUniqueSMILE()));
-
-
-
-
-
-                                queryResultData.addElement(qResultPanel);
-//                                queryResultList.repaint();
-
-                            } catch (InvalidSmilesException ex) {
-                                Logger.getLogger(MainUI.class.getName()).log(Level.SEVERE, null, ex);
-                            } catch (CDKException ex) {
-                                Logger.getLogger(MainUI.class.getName()).log(Level.SEVERE, null, ex);
-                            }
-                        }
-                    } else {
-                        Utility.UI.showInfoMessage(getRootPane(), "No drug contains the scaffold provided!");
-                        status.setText("Scaffold not found in the database!");
-                    }
-
-
-                    // Utility.UI.showInfoMessage(getRootPane(), res.toString());        
-                } else {
-                    Utility.UI.showInfoMessage(getRootPane(), "HMaps not loaded!");
-                }
             }
-        }.start();
+
+        }
+
+
+
 
 
     }//GEN-LAST:event_jButton1ActionPerformed
@@ -619,12 +569,12 @@ public class MainUI extends javax.swing.JFrame {
     }
 
     private void loadCachedHMapLoc() {
-        File cacheFile = new File(Utility.USER_DIR +Utility.FILE_SEPERATOR+ "si.cache");
+        File cacheFile = new File(Utility.USER_DIR + Utility.FILE_SEPERATOR + "si.cache");
         if (cacheFile.exists()) {
-            Object locs[] =  Utility.getObjectFromFile(cacheFile);
-            ssHMapLoc.setText((String)locs[0]);
-            dHMapLoc.setText((String)locs[1]);
-            scfHMapLoc.setText((String)locs[2]);
+            Object locs[] = Utility.getObjectFromFile(cacheFile);
+            ssHMapLoc.setText((String) locs[0]);
+            dHMapLoc.setText((String) locs[1]);
+            scfHMapLoc.setText((String) locs[2]);
 
             loadHMaps();
 
@@ -633,8 +583,105 @@ public class MainUI extends javax.swing.JFrame {
     }
 
     private void cacheHMapLoc() {
-        File cacheFile = new File(Utility.USER_DIR +Utility.FILE_SEPERATOR+"si.cache");
+        File cacheFile = new File(Utility.USER_DIR + Utility.FILE_SEPERATOR + "si.cache");
         Utility.saveObjectToFile(cacheFile, ssHMapLoc.getText(), dHMapLoc.getText(), scfHMapLoc.getText());
+    }
+
+    private class QuerySwingWorker extends SwingWorker<Void, Void> {
+
+        private int total = 0;
+        private int loaded = 0;
+
+        @Override
+        protected Void doInBackground() throws Exception {
+            if (isHMapsLoaded()) {
+
+                String query = queryBox.getText().trim();
+
+                renderer.setHeight(scfStruct.getHeight());
+                renderer.setWidth(scfStruct.getWidth());
+                try {
+                    scfStruct.setIcon(renderer.getIconFromSmiles(query));
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+
+
+
+
+                Scaffold scf = (Scaffold) getQueryIndexFromMap(scaffoldList, query);
+                if (scf != null) {
+                    scfName.setText(scf.getIUPACname());
+                    scfLogP.setText(String.valueOf(scf.getLogP()));
+                    scfBMFrame.setText(scf.getBMframework());
+                } else {
+                    status.setText("Scaffold not found in the database!");
+                }
+
+                List<String> resList = (List<String>) getQueryIndexFromMap(invertedIndexMap, query);
+                if (resList != null) {
+//                      
+                    total = resList.size();
+                    status.setText(total + " results found in the database.");
+                    for (String res : resList) {
+                        try {
+                            if (!isCancelled()) {
+
+                                QueryResultPanel qResultPanel = new QueryResultPanel();
+                                Drug resD = drugList.get(res.toLowerCase());
+                                qResultPanel.setdName(resD.getName());
+                                qResultPanel.setdSMILE(resD.getUniqueSMILE());
+                                qResultPanel.setdInd(resD.getIndication());
+                                qResultPanel.setdRef(resD.getDrugbankID());
+                                renderer.setHeight(qResultPanel.getdStructDimension().height);
+                                renderer.setWidth(qResultPanel.getdStructDimension().width);
+                                qResultPanel.setdStruct(renderer.getIconFromSmiles(resD.getUniqueSMILE()));
+                                queryResultData.addElement(qResultPanel);
+                                loaded++;
+
+                                setProgress(100 * loaded / total);
+//                                publish();
+                                status.setText(total + " results found in the database. " + getProgress() + "% loading complete");
+
+
+                            } else {
+
+                                status.setText(status.getText() + "--load cancelled!");
+                                break;
+                            }
+
+                        } catch (InvalidSmilesException ex) {
+                            Logger.getLogger(MainUI.class.getName()).log(Level.SEVERE, null, ex);
+                        } catch (CDKException ex) {
+                            Logger.getLogger(MainUI.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    }
+                } else {
+                    Utility.UI.showInfoMessage(getRootPane(), "No drug contains the scaffold provided!");
+                    status.setText("Scaffold not found in the database!");
+                }
+
+
+                // Utility.UI.showInfoMessage(getRootPane(), res.toString());        
+            } else {
+                Utility.UI.showInfoMessage(getRootPane(), "HMaps not loaded!");
+            }
+            return null;
+
+        }
+
+        @Override
+        protected void process(List<Void> list) {
+            status.setText(total + " results found in the database. " + getProgress() + "% loading complete");
+
+
+        }
+
+        @Override
+        protected void done() {
+            status.setText(total + " results found in the database. finished loading");
+
+        }
     }
 
     class PanelRenderer implements ListCellRenderer {
